@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="section">
+    <div style="max-width:400px;margin:0 auto;background:white;padding:40px;border:var(--border)">
+        <h2 class="section-title" style="font-size:32px;margin-bottom:24px">Iniciar Sesión</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <a href="{% url 'password_reset' %}" style="font-size:12px; color:var(--muted); text-decoration:none;">¿Olvidaste tu contraseña?</a>
+            <button type="submit" class="btn-primary" style="width:100%; margin-top:20px;">Ingresar</button>
+        </form>
+        <p style="margin-top:20px;font-size:14px;color:var(--muted)">¿No tienes cuenta? <a href="{% url 'registro' %}" style="color:var(--accent)">Regístrate aquí</a></p>
+    </div>
+</section>
+{% endblock %}

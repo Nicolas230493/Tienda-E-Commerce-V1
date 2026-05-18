@@ -1,0 +1,66 @@
+<!-- CART MODAL -->
+<div class="modal-overlay" id="cartModal">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="cart-modal-header">
+      <span class="cart-modal-title">Tu Carrito</span>
+      <button class="modal-close" onclick="closeCart()">×</button>
+    </div>
+    <div class="cart-body" id="cartBody">
+        <div class="cart-empty">
+            <div class="cart-empty-icon">🛒</div>
+            <div class="cart-empty-text">Cargando carrito...</div>
+        </div>
+    </div>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="modal-overlay" id="checkoutModal">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="checkout-header" style="padding:22px 26px; border-bottom:var(--border); display:flex; justify-content:space-between; align-items:center;">
+      <span style="font-family:'Cormorant Garamond',serif; font-size:24px;">Finalizar Compra</span>
+      <button class="modal-close" onclick="closeCheckout()">×</button>
+    </div>
+    <div class="checkout-body" style="padding:26px;">
+        {% if user.is_authenticated %}
+        <div class="form-group" style="margin-bottom:15px;">
+            <label style="display:block; font-size:11px; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:5px;">Nombre Completo</label>
+            <input type="text" id="checkoutNombre" value="{{ user.first_name }} {{ user.last_name }}" style="width:100%; padding:12px; border:var(--border); outline:none;">
+        </div>
+        <div class="form-group" style="margin-bottom:15px;">
+            <label style="display:block; font-size:11px; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:5px;">Email</label>
+            <input type="email" id="checkoutEmail" value="{{ user.email }}" style="width:100%; padding:12px; border:var(--border); outline:none;">
+        </div>
+        <div class="form-group" style="margin-bottom:15px;">
+            <label style="display:block; font-size:11px; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:5px;">Dirección de Envío</label>
+            <input type="text" id="checkoutDireccion" value="{{ user.perfil.direccion }}" style="width:100%; padding:12px; border:var(--border); outline:none;">
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px;">
+            <div class="form-group">
+                <label style="display:block; font-size:11px; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:5px;">Ciudad</label>
+                <input type="text" id="checkoutCiudad" value="{{ user.perfil.ciudad }}" style="width:100%; padding:12px; border:var(--border); outline:none;">
+            </div>
+            <div class="form-group">
+                <label style="display:block; font-size:11px; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:5px;">Código Postal</label>
+                <input type="text" id="checkoutZip" value="{{ user.perfil.codigo_postal }}" style="width:100%; padding:12px; border:var(--border); outline:none;">
+            </div>
+        </div>
+        <button class="checkout-btn" onclick="procesarPago()">Confirmar y Pagar</button>
+        {% else %}
+        <div style="text-align:center; padding:20px;">
+            <p style="margin-bottom:20px;">Debes iniciar sesión para finalizar tu compra.</p>
+            <a href="{% url 'login' %}?next={{ request.path }}" class="btn-primary" style="text-decoration:none; display:inline-block;">Iniciar Sesión</a>
+        </div>
+        {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCT DETAIL MODAL -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div id="detailContent">
+        <!-- Cargado dinámicamente -->
+    </div>
+  </div>
+</div>

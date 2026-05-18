@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="section">
+    <div style="max-width:900px;margin:0 auto">
+        <h2 class="section-title">Mi Perfil</h2>
+        
+        <div style="display:grid;grid-template-columns:1fr 2fr;gap:40px;margin-top:40px">
+            <!-- Datos del Usuario -->
+            <div style="background:white;padding:30px;border:var(--border)">
+                <h3 style="font-family:'Cormorant Garamond',serif;font-size:24px;margin-bottom:20px">Información Personal</h3>
+                <p style="margin-bottom:10px"><strong>Usuario:</strong> {{ user.username }}</p>
+                <p style="margin-bottom:10px"><strong>Email:</strong> {{ user.email }}</p>
+                <p style="margin-bottom:10px"><strong>Nombre:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+                <hr style="border:none;border-top:var(--border);margin:20px 0">
+                <p style="margin-bottom:10px"><strong>Teléfono:</strong> {{ user.perfil.telefono|default:"No especificado" }}</p>
+                <p style="margin-bottom:10px"><strong>Dirección:</strong> {{ user.perfil.direccion|default:"No especificada" }}</p>
+                <p style="margin-bottom:10px"><strong>Ciudad:</strong> {{ user.perfil.ciudad|default:"No especificada" }}</p>
+            </div>
+
+            <!-- Historial de Pedidos -->
+            <div>
+                <h3 style="font-family:'Cormorant Garamond',serif;font-size:24px;margin-bottom:20px">Historial de Pedidos</h3>
+                {% if pedidos %}
+                    {% for pedido in pedidos %}
+                    <div style="background:white;padding:20px;border:var(--border);margin-bottom:15px">
+                        <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+                            <span style="font-weight:500">Pedido #{{ pedido.id }}</span>
+                            <span style="color:var(--muted)">{{ pedido.fecha|date:"d/m/Y H:i" }}</span>
+                        </div>
+                        <div style="margin-bottom:10px">
+                            {% for item in pedido.items.all %}
+                                <div style="font-size:14px;color:var(--muted)">{{ item.cantidad }} x {{ item.producto.nombre }} (${{ item.precio }})</div>
+                            {% endfor %}
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;border-top:var(--border);padding-top:10px">
+                            <span style="font-weight:600;font-size:18px">Total: ${{ pedido.total }}</span>
+                            <span style="padding:4px 12px;font-size:11px;text-transform:uppercase;letter-spacing:1px;background:{% if pedido.pagado %}#E8F0E8;color:var(--success){% else %}#F0EAE0;color:var(--muted){% endif %}">
+                                {% if pedido.pagado %}Pagado{% else %}Pendiente{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div style="background:white;padding:40px;text-align:center;border:var(--border);color:var(--muted)">
+                        <div style="font-size:48px;margin-bottom:15px">📦</div>
+                        <p>Aún no has realizado ningún pedido.</p>
+                        <a href="{% url 'home' %}" class="btn-primary" style="display:inline-block;margin-top:20px;text-decoration:none">Ir a la tienda</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

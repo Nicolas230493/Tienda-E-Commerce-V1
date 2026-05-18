@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% block title %}{{ producto.nombre }} — Impulso Shop{% endblock %}
+
+{% block content %}
+<section class="section" style="background: white;">
+    <div style="max-width:1200px; margin:0 auto;">
+        <!-- Breadcrumb -->
+        <div style="font-size:12px; color:var(--muted); margin-bottom:30px; text-transform:uppercase; letter-spacing:1px;">
+            <a href="{% url 'home' %}" style="color:inherit; text-decoration:none;">Inicio</a> / 
+            <a href="{% url 'home' %}?categoria={{ producto.categoria.slug }}" style="color:inherit; text-decoration:none;">{{ producto.categoria.nombre }}</a> / 
+            <span style="color:var(--dark);">{{ producto.nombre }}</span>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:60px;">
+            <!-- Galería de Imágenes -->
+            <div>
+                <div style="background:var(--light); aspect-ratio:1; display:flex; align-items:center; justify-content:center; border:var(--border); border-radius:var(--card-radius); overflow:hidden;">
+                    {% if producto.imagen %}
+                        <img src="{{ producto.imagen.url }}" id="mainImage" style="max-width:100%; max-height:100%; object-fit:contain;">
+                    {% else %}
+                        <span style="font-size:120px;">{{ producto.emoji_preview }}</span>
+                    {% endif %}
+                </div>
+                
+                <!-- Miniaturas -->
+                <div style="display:flex; gap:10px; margin-top:15px;">
+                    {% if producto.imagen %}
+                        <div onclick="document.getElementById('mainImage').src='{{ producto.imagen.url }}'" style="width:70px; height:70px; border:var(--border); background:var(--light); cursor:pointer; display:flex; align-items:center; justify-content:center;">
+                            <img src="{{ producto.imagen.url }}" style="max-width:90%; max-height:90%; object-fit:contain;">
+                        </div>
+                    {% endif %}
+                    {% for img in producto.galeria.all %}
+                        <div onclick="document.getElementById('mainImage').src='{{ img.imagen.url }}'" style="width:70px; height:70px; border:var(--border); background:var(--light); cursor:pointer; display:flex; align-items:center; justify-content:center;">
+                            <img src="{{ img.imagen.url }}" style="max-width:90%; max-height:90%; object-fit:contain;">
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Información del Producto -->
+            <div>
+                <span style="font-size:11px; color:var(--accent); text-transform:uppercase; letter-spacing:2.5px; font-weight:500;">{{ producto.marca }}</span>
+                <h1 style="font-family:'Cormorant Garamond',serif; font-size:48px; margin:10px 0 15px; color:var(--dark); line-height:1.1;">{{ producto.nombre }}</h1>
+                
+                <div style="display:flex; align-items:baseline; gap:15px; margin-bottom:25px;">
+                    {% if producto.precio_anterior %}
+                        <span style="font-size:20px; color:var(--muted); text-decoration:line-through;">${{ producto.precio_anterior }}</span>
+                    {% endif %}
+                    <span style="font-size:32px; font-weight:500; color:var(--dark);">${{ producto.precio }}</span>
+                    {% if producto.en_oferta %}
+                        <span style="background:#E8F0E8; color:var(--success); font-size:11px; padding:4px 10px; text-transform:uppercase; font-weight:600;">Oferta</span>
+                    {% endif %}
+                </div>
+
+                <p style="font-size:15px; color:var(--muted); line-height:1.8; margin-bottom:30px;">
+                    {{ producto.descripcion|linebreaks }}
+                </p>
+
+                <div style="border-top:var(--border); border-bottom:var(--border); padding:25px 0; margin-bottom:30px;">
+                    <div style="display:flex; gap:15px; align-items:center;">
+                        <div style="flex:1;">
+                            <p style="font-size:12px; color:var(--muted); margin-bottom:8px;">Disponibilidad: 
+                                <span style="color:{% if producto.stock > 0 %}var(--success){% else %}#c0392b{% endif %}; font-weight:500;">
+                                    {% if producto.stock > 0 %}{{ producto.stock }} unidades{% else %}Agotado{% endif %}
+                                </span>
+                            </p>
+                            <button onclick="addToCart({{ producto.id }})" class="btn-primary" style="width:100%;" {% if producto.stock == 0 %}disabled{% endif %}>
+                                {% if producto.stock > 0 %}Agregar al Carrito{% else %}Sin Stock{% endif %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detalles Adicionales -->
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div style="display:flex; align-items:center; gap:10px; font-size:13px; color:var(--muted);">
+                        <span style="font-size:18px;">🚚</span> Envío Gratis
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px; font-size:13px; color:var(--muted);">
+                        <span style="font-size:18px;">🔄</span> Devolución 30 días
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px; font-size:13px; color:var(--muted);">
+                        <span style="font-size:18px;">🛡️</span> Garantía Oficial
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px; font-size:13px; color:var(--muted);">
+                        <span style="font-size:18px;">💳</span> Cuotas sin interés
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Productos Relacionados -->
+{% if relacionados %}
+<section class="section">
+    <div style="max-width:1200px; margin:0 auto;">
+        <h2 class="section-title" style="font-size:32px; margin-bottom:30px;">También te puede interesar</h2>
+        <div class="products-grid">
+            {% for rel in relacionados %}
+                <div class="prod-card">
+                    <a href="{% url 'producto_detalle' rel.slug %}" style="text-decoration:none; color:inherit;">
+                        <div class="prod-img" style="background:var(--light);">
+                            {% if rel.imagen %}
+                                <img src="{{ rel.imagen.url }}" style="max-width:100%; max-height:100%; object-fit:contain;">
+                            {% else %}
+                                <span>{{ rel.emoji_preview }}</span>
+                            {% endif %}
+                        </div>
+                    </a>
+                    <div class="prod-info">
+                        <div class="prod-brand">{{ rel.marca }}</div>
+                        <div class="prod-name"><a href="{% url 'producto_detalle' rel.slug %}" style="text-decoration:none; color:inherit;">{{ rel.nombre }}</a></div>
+                        <div class="prod-bottom">
+                            <div class="prod-price">${{ rel.precio }}</div>
+                            <button class="add-to-cart" onclick="addToCart({{ rel.id }})">+</button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

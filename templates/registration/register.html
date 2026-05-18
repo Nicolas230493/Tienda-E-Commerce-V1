@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="section">
+    <div style="max-width:400px;margin:0 auto;background:white;padding:40px;border:var(--border)">
+        <h2 class="section-title" style="font-size:32px;margin-bottom:24px">Crear Cuenta</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn-primary" style="width:100%;margin-top:20px">Registrarse</button>
+        </form>
+        <p style="margin-top:20px;font-size:14px;color:var(--muted)">¿Ya tienes cuenta? <a href="{% url 'login' %}" style="color:var(--accent)">Inicia sesión</a></p>
+    </div>
+</section>
+{% endblock %}

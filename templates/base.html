@@ -1,0 +1,70 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Impulso Shop — Tienda de Tecnología{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="banner">✦ Envío gratuito en pedidos superiores a $99 <span>· NUEVA COLECCIÓN OTOÑO 2026 YA DISPONIBLE</span> ✦</div>
+
+    <nav>
+        <div class="nav-logo"><a href="{% url 'home' %}" style="text-decoration:none;color:inherit;">Impulso<span>Shop</span></a></div>
+        <div class="nav-links">
+            <a href="{% url 'home' %}" class="{% if not request.GET.categoria %}active{% endif %}">Inicio</a>
+            {% for cat in categorias_nav %}
+                <a href="?categoria={{ cat.slug }}" class="{% if request.GET.categoria == cat.slug %}active{% endif %}">{{ cat.nombre }}</a>
+            {% endfor %}
+        </div>
+        <div class="nav-right">
+            {% if user.is_authenticated %}
+                <a href="{% url 'perfil' %}" style="font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);text-decoration:none;margin-right:15px">Mi Perfil</a>
+                <form action="{% url 'logout' %}" method="post" style="display:inline">
+                    {% csrf_token %}
+                    <button type="submit" style="background:none;border:none;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);cursor:pointer;margin-left:10px">Salir</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" style="font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);text-decoration:none">Entrar</a>
+            {% endif %}
+            <form action="{% url 'home' %}" method="get" class="search-bar">
+                <span style="font-size:14px;color:var(--muted)">🔍</span>
+                <input type="text" name="q" placeholder="Buscar productos..." value="{{ request.GET.q }}">
+            </form>
+            <button class="cart-btn" onclick="toggleSideCart(true)">
+                🛒 Carrito
+                <span class="badge" id="cartCount" style="{% if not cart_count %}display:none;{% endif %}">{{ cart_count|default:0 }}</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- SIDE CART -->
+    <div class="side-cart-overlay" id="sideCartOverlay" onclick="toggleSideCart(false)"></div>
+    <div class="side-cart" id="sideCart">
+        <div class="side-cart-header">
+            <span style="font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:500;">Tu Carrito</span>
+            <button class="modal-close" onclick="toggleSideCart(false)">×</button>
+        </div>
+        <div class="side-cart-body" id="sideCartBody">
+            <!-- Contenido dinámico -->
+        </div>
+        <div class="side-cart-footer" id="sideCartFooter">
+            <!-- Totales y Botón -->
+        </div>
+    </div>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    {% include 'includes/footer.html' %}
+    {% include 'includes/modals.html' %}
+
+    <div class="toast" id="toast"></div>
+    <button class="scroll-top" id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

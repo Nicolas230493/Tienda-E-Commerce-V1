@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block content %}
+<div id="page-home">
+
+<section class="hero">
+  <div class="hero-text">
+    <div class="hero-tag">Nueva Colección · Otoño 2026</div>
+    <h1 class="hero-title">Moda que <em>eleva</em><br>tu estilo</h1>
+    <p class="hero-desc">Descubre piezas únicas diseñadas para quienes buscan elegancia sin esfuerzo. Calidad artesanal, diseño contemporáneo.</p>
+    <div class="hero-btns">
+      <button class="btn-primary">Ver Colección</button>
+      <button class="btn-outline">Novedades</button>
+    </div>
+    <div class="hero-stats">
+      <div><div class="stat-num">12K+</div><div class="stat-label">Clientes felices</div></div>
+      <div><div class="stat-num">98%</div><div class="stat-label">Satisfacción</div></div>
+      <div><div class="stat-num">4.9</div><div class="stat-label">Valoración media</div></div>
+    </div>
+  </div>
+  <div class="hero-img">
+    <div class="hero-badge">SS26</div>
+    <div class="hero-img-emoji">👗</div>
+    <div class="hero-scroll">Scroll</div>
+  </div>
+</section>
+
+<div class="features">
+  <div class="feat"><div class="feat-icon">🚚</div><div><div class="feat-title">Envío gratis</div><div class="feat-desc">En pedidos mayores a $99 a todo el país</div></div></div>
+  <div class="feat"><div class="feat-icon">🔄</div><div><div class="feat-title">Devolución 30 días</div><div class="feat-desc">Sin preguntas. Satisfacción garantizada</div></div></div>
+  <div class="feat"><div class="feat-icon">🔒</div><div><div class="feat-title">Pago 100% seguro</div><div class="feat-desc">Encriptación SSL en todas las transacciones</div></div></div>
+  <div class="feat"><div class="feat-icon">💎</div><div><div class="feat-title">Calidad premium</div><div class="feat-desc">Materiales seleccionados, artesanía real</div></div></div>
+</div>
+
+<section class="section">
+  <div class="section-header">
+    <h2 class="section-title">Explorar Categorías</h2>
+  </div>
+  <div class="cats-grid">
+    {% for cat in categorias %}
+    <div class="cat-card">
+      <a href="?categoria={{ cat.slug }}" style="text-decoration:none;color:inherit;">
+        <div class="cat-card-inner {{ cat.color_clase }}">
+          <div class="cat-emoji">{{ cat.emoji }}</div>
+          <div class="cat-card-label">{{ cat.nombre }}</div>
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section" id="products-section">
+  <div class="section-header">
+    <h2 class="section-title">{% if request.GET.categoria %}Productos en {{ request.GET.categoria|title }}{% else %}Productos Destacados{% endif %}</h2>
+  </div>
+  <div class="products-grid" id="productsGrid">
+    {% for producto in productos %}
+    <div class="prod-card fade-in">
+      <a href="{% url 'producto_detalle' producto.slug %}" style="text-decoration:none; color:inherit;">
+          <div class="prod-img" style="background:var(--light)">
+            {% if producto.es_nuevo %}<div class="prod-badge">Nuevo</div>{% endif %}
+            {% if producto.en_oferta %}<div class="prod-badge sale">Oferta</div>{% endif %}
+            {% if producto.imagen %}
+                <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" style="max-width:100%;max-height:100%;object-fit:contain">
+            {% else %}
+                <span>{{ producto.emoji_preview }}</span>
+            {% endif %}
+          </div>
+      </a>
+      <div class="prod-info">
+        <div class="prod-brand">{{ producto.marca }}</div>
+        <div class="prod-name"><a href="{% url 'producto_detalle' producto.slug %}" style="text-decoration:none; color:inherit;">{{ producto.nombre }}</a></div>
+        <div class="prod-stars">
+            <span class="star-val">{{ "★"|rjust:producto.valoracion }}</span>
+            <span class="review-count">({{ producto.total_resenas }})</span>
+        </div>
+        <div class="prod-bottom">
+          <div class="prod-price">
+            {% if producto.precio_anterior %}<span class="old">${{ producto.precio_anterior }}</span>{% endif %}
+            <span>${{ producto.precio }}</span>
+          </div>
+          <button class="add-to-cart" onclick="addToCart({{ producto.id }})">+ Agregar</button>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div style="grid-column:1/-1;text-align:center;padding:80px;color:var(--muted)">
+        <div style="font-size:40px;margin-bottom:12px">🔍</div>
+        <div style="font-size:16px">No se encontraron productos en esta categoría.</div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<div class="newsletter" id="newsletter-section">
+  <div class="nl-text">
+    <h2>Únete a nuestra<br>comunidad</h2>
+    <p>Recibe novedades, descuentos exclusivos y acceso anticipado a nuevas colecciones antes que nadie.</p>
+  </div>
+  <div>
+    <div class="email-form">
+      <input type="text" placeholder="Tu nombre" id="nlName">
+      <input type="email" placeholder="tu@email.com" id="nlEmail">
+      <button onclick="subscribeEmail()">Suscribirme gratis</button>
+      <p class="privacy">🔒 Sin spam. Cancelá cuando quieras.</p>
+    </div>
+  </div>
+</div>
+
+</div>
+{% endblock %}
